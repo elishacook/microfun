@@ -1,0 +1,23 @@
+{
+  "name": "microfun",
+  "version": "1.0.0",
+  "description": "Another way to build javascript applications",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test.js"
+  },
+  "author": "Elisha Fitch-Cook <elisha@elishacook.com> (https://github.com/elishacook)",
+  "license": "MIT",
+  "repository": "elishacook/microfun",
+  "dependencies": {
+    "inferno": "^0.7.21",
+    "inferno-create-element": "^0.7.21",
+    "inferno-dom": "^0.7.21"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.5.3",
+    "sinon": "^1.17.4",
+    "sinon-chai": "^2.8.0"
+  }
+}
