@@ -7,7 +7,7 @@ module.exports = {
   mount: mount
 }
 
-function mount (node, model, view)
+function mount (node, model, view, channels)
 {
   var get_model = function () { return model }
   var set_model = function (x) {
@@ -17,6 +17,11 @@ function mount (node, model, view)
   var signal = create_signal(get_model, set_model)
   var render = create_render(node, signal)
   render(model, view)
+  
+  channels.forEach(function (x)
+  {
+    x(signal)
+  })
 }
 
 
