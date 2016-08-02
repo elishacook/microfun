@@ -165,26 +165,29 @@ function task (signal, command, succeed_action, fail_action, callback)
  */
 function create_render (root_node, signal)
 {
-  var pending_render = false
   var render_model = null
   var render_view = null
+  var pending = false
   
   function render (model, view)
   {
-    if (pending_render)
+    render_model = model
+    render_view = view
+    
+    if (pending)
     {
       return
     }
-    
-    pending_render = true
-    render_model = model
-    render_view = view
-    requestAnimationFrame(_render)
+    else
+    {
+      pending = true
+      requestAnimationFrame(_render)
+    }
   }
 
   function _render ()
   {
-    pending_render = false
+    pending = false
     InfernoDOM.render(
       render_view(render_model, signal),
       root_node
