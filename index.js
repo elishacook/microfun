@@ -1,9 +1,10 @@
 "use strict"
 
 var InfernoDOM = require('inferno-dom')
+var createElement = require('inferno-create-element')
 
 module.exports = {
-  h: require('inferno-create-element'),
+  h: h,
   mount: mount
 }
 
@@ -201,4 +202,76 @@ function create_render (root_node, signal)
 function array(obj)
 {
   return Array.prototype.slice.call(obj)
+}
+
+/**
+ * An adapter for createElement() to make it work like mithril's m()
+ */
+function h(tag, attrs)
+{
+  var parsed = parse_tag(tag)
+  var children = []
+  
+  if (attrs)
+  {
+    if (attrs.tag || typeof attrs == "string")
+    {
+      children.push(attrs)
+    }
+    else
+    {
+      Object.assign(parsed.attrs, attrs)
+    }
+  }
+  
+  children = children.concat(
+    Array.prototype.slice.call(arguments, 2)
+  )
+  
+  return createElement(parsed.tag, parsed.attrs, children)
+}
+
+/* Based on https://github.com/lhorie/mithril.js/blob/next/mithril.js#L89 */
+function parse_tag (tag)
+{
+  var classes = []
+  var attrs = {}
+  var parser = /(?:(^|#|\.)([^#\.\[\]]+))|(\[(.+?)(?:\s*=\s*("|'|)((?:\\["'\]]|.)*?)\5)?\])/g
+  var match
+  var html_tag = 'div'
+  
+  while ((match = parser.exec(tag)))
+  {
+    if (match[1] === "" && match[2])
+    {
+      html_tag = match[2]
+    }
+    else if (match[1] === "#")
+    {
+      attrs.id = match[2]
+    }
+    else if (match[1] === ".")
+    {
+      classes.push(match[2])
+    }
+    else if (match[3][0] === "[")
+    {
+      var attrValue = match[6]
+      if (attrValue)
+      {
+        attrValue = attrValue.replace(/\\(["'])/g, "$1")
+      }
+      attrs[match[4]] = attrValue || true
+    }
+  }
+  
+  if (classes.length > 0)
+  {
+    attrs.className = classes.join(' ')
+  }
+  
+  return {
+    tag: html_tag,
+    attrs: attrs
+  }
 }
