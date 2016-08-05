@@ -218,6 +218,10 @@ function h(tag, attrs)
     {
       children.push(attrs)
     }
+    else if (attrs.constructor == Array)
+    {
+      children = unpack_children(attrs)
+    }
     else
     {
       Object.assign(parsed.attrs, attrs)
@@ -225,7 +229,7 @@ function h(tag, attrs)
   }
   
   children = children.concat(
-    Array.prototype.slice.call(arguments, 2)
+    unpack_children(Array.prototype.slice.call(arguments, 2))
   )
   
   return createElement(parsed.tag, parsed.attrs, children)
@@ -274,4 +278,21 @@ function parse_tag (tag)
     tag: html_tag,
     attrs: attrs
   }
+}
+
+function unpack_children (children)
+{
+  var new_children = []
+  children.forEach(function (c)
+  {
+    if (c.constructor == Array)
+    {
+      new_children = new_children.concat(unpack_children(c))
+    }
+    else
+    {
+      new_children.push(c)
+    }
+  })
+  return new_children
 }
