@@ -1,6 +1,6 @@
 {
   "name": "microfun",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "description": "Another way to build javascript applications",
   "main": "index.js",
   "scripts": {
@@ -9,7 +9,7 @@
   "author": "Elisha Fitch-Cook <elisha@elishacook.com> (https://github.com/elishacook)",
   "license": "MIT",
   "repository": "elishacook/microfun",
-  "dependencies": {
+  "peerDependencies": {
     "inferno": "^0.7.21",
     "inferno-create-element": "^0.7.21",
     "inferno-dom": "^0.7.21"
