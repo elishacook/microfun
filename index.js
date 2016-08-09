@@ -1,12 +1,9 @@
 "use strict"
 
-var diff = require('virtual-dom/diff')
-var patch = require('virtual-dom/patch')
-var createElement = require('virtual-dom/create-element')
-var old_h = require('virtual-dom/h')
+var m = require('mithril')
 
 module.exports = {
-  h: h,
+  h: m,
   mount: mount
 }
 
@@ -171,8 +168,6 @@ function create_render (root_node, signal)
   var render_model = null
   var render_view = null
   var pending = false
-  var tree = null
-  var _render = _render_first
   
   function render (model, view)
   {
@@ -190,23 +185,13 @@ function create_render (root_node, signal)
     }
   }
   
-  function _render_first ()
+  function _render ()
   {
     pending = false
-    tree = render_view(render_model, signal)
-    var new_node = createElement(tree)
-    root_node.appendChild(new_node)
-    root_node = new_node
-    _render = _render_diff
-  }
-  
-  function _render_diff ()
-  {
-    pending = false
-    var new_tree = render_view(render_model, signal)
-    var patches = diff(tree, new_tree)
-    root_node = patch(root_node, patches)
-    tree = new_tree
+    m.render(
+      root_node,
+      render_view(render_model, signal)
+    )
   }
   
   return render
