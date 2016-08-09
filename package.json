@@ -1,6 +1,6 @@
 {
   "name": "microfun",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "Another way to build javascript applications",
   "main": "index.js",
   "scripts": {
@@ -10,9 +10,7 @@
   "license": "MIT",
   "repository": "elishacook/microfun",
   "peerDependencies": {
-    "inferno": "^0.7.21",
-    "inferno-create-element": "^0.7.21",
-    "inferno-dom": "^0.7.21"
+    "virtual-dom": "^2.1.1"
   },
   "devDependencies": {
     "chai": "^3.5.0",

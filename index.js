@@ -1,7 +1,9 @@
 "use strict"
 
-var InfernoDOM = require('inferno-dom')
-var createElement = require('inferno-create-element')
+var diff = require('virtual-dom/diff')
+var patch = require('virtual-dom/patch')
+var createElement = require('virtual-dom/create-element')
+var old_h = require('virtual-dom/h')
 
 module.exports = {
   h: h,
@@ -169,6 +171,8 @@ function create_render (root_node, signal)
   var render_model = null
   var render_view = null
   var pending = false
+  var tree = null
+  var _render = _render_first
   
   function render (model, view)
   {
@@ -185,14 +189,24 @@ function create_render (root_node, signal)
       requestAnimationFrame(_render)
     }
   }
-
-  function _render ()
+  
+  function _render_first ()
   {
     pending = false
-    InfernoDOM.render(
-      render_view(render_model, signal),
-      root_node
-    )
+    tree = render_view(render_model, signal)
+    var new_node = createElement(tree)
+    root_node.appendChild(new_node)
+    root_node = new_node
+    _render = _render_diff
+  }
+  
+  function _render_diff ()
+  {
+    pending = false
+    var new_tree = render_view(render_model, signal)
+    var patches = diff(tree, new_tree)
+    root_node = patch(root_node, patches)
+    tree = new_tree
   }
   
   return render
@@ -205,7 +219,7 @@ function array(obj)
 }
 
 /**
- * An adapter for createElement() to make it work like mithril's m()
+ * An adapter for h() to make it work like mithril's m()
  */
 function h(tag, attrs)
 {
@@ -214,7 +228,7 @@ function h(tag, attrs)
   
   if (attrs)
   {
-    if (attrs.tag || typeof attrs == "string")
+    if (attrs.tagName || typeof attrs == "string")
     {
       children.push(attrs)
     }
@@ -232,7 +246,7 @@ function h(tag, attrs)
     unpack_children(Array.prototype.slice.call(arguments, 2))
   )
   
-  return createElement(parsed.tag, parsed.attrs, children)
+  return old_h(parsed.tag, parsed.attrs, children)
 }
 
 /* Based on https://github.com/lhorie/mithril.js/blob/next/mithril.js#L89 */
@@ -285,6 +299,11 @@ function unpack_children (children)
   var new_children = []
   children.forEach(function (c)
   {
+    if (typeof c == "undefined" || c == "")
+    {
+      return
+    }
+    
     if (c.constructor == Array)
     {
       new_children = new_children.concat(unpack_children(c))
